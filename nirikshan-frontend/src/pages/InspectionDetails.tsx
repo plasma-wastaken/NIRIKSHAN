@@ -1,0 +1,247 @@
+import React from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Badge } from '../components/ui/Badge';
+import { 
+  MapPin, 
+  Clock, 
+  User, 
+  ArrowLeft, 
+  FileCheck2,
+  Navigation,
+  Camera,
+  Brain,
+  Send,
+} from 'lucide-react';
+import { EmptyState } from '../components/ui/EmptyState';
+import { useInspections } from '../context/InspectionContext';
+
+export const InspectionDetails: React.FC = () => {
+  const { inspectionId } = useParams<{ inspectionId: string }>();
+  const navigate = useNavigate();
+  const { inspections } = useInspections();
+
+  const inspection = inspections.find((i) => i.inspection_id === inspectionId);
+
+  if (!inspection) {
+    return (
+      <EmptyState 
+        title="Inspection not found" 
+        description="The requested inspection could not be found."
+        actionLabel="Back to List"
+        onAction={() => navigate('/inspector/inspections')}
+      />
+    );
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'ASSIGNED':   return <Badge variant="info">Assigned</Badge>;
+      case 'IN_PROGRESS': return <Badge variant="warning">In Progress</Badge>;
+      case 'SUBMITTED':  return <Badge variant="default">Submitted</Badge>;
+      case 'COMPLETED':  return <Badge variant="success">Completed</Badge>;
+      default:           return <Badge>{status}</Badge>;
+    }
+  };
+
+  const formatDateTime = (isoString: string | null) => {
+    if (!isoString) return 'Not recorded';
+    return new Date(isoString).toLocaleString('en-IN', {
+      month: 'short', day: 'numeric', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  };
+
+  const isSubmittedOrCompleted =
+    inspection.status === 'SUBMITTED' || inspection.status === 'COMPLETED';
+
+  return (
+    <div className="space-y-6 pb-20">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate('/inspector/inspections')} className="px-2">
+          <ArrowLeft className="h-5 w-5 mr-1" /> Back
+        </Button>
+        <h1 className="text-xl font-bold text-surface-900 truncate">
+          Details: {inspection.inspection_id}
+        </h1>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* ── Site Information ─────────────────────────────────────────── */}
+        <Card className="border-surface-200 shadow-sm">
+          <CardHeader className="bg-surface-50 border-b border-surface-200 pb-4">
+            <CardTitle className="text-sm uppercase tracking-wider text-surface-500">Site Information</CardTitle>
+          </CardHeader>
+          <CardContent className="p-5 space-y-4">
+            <div>
+              <p className="text-xs text-surface-500 font-medium">SITE NAME</p>
+              <p className="text-base font-semibold text-surface-900">{inspection.site_name}</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-surface-100 p-2 rounded-md mt-1">
+                <MapPin className="h-4 w-4 text-surface-500" />
+              </div>
+              <div>
+                <p className="text-xs text-surface-500 font-medium">ADDRESS</p>
+                <p className="text-sm text-surface-900">{inspection.address}</p>
+                <p className="text-xs text-surface-500 mt-1">Site ID: {inspection.site_id}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-surface-100 p-2 rounded-md mt-1">
+                <User className="h-4 w-4 text-surface-500" />
+              </div>
+              <div>
+                <p className="text-xs text-surface-500 font-medium">ASSIGNED INSPECTOR</p>
+                <p className="text-sm text-surface-900">{inspection.inspector_id}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Inspection Status ─────────────────────────────────────────── */}
+        <Card className="border-surface-200 shadow-sm">
+          <CardHeader className="bg-surface-50 border-b border-surface-200 pb-4">
+            <CardTitle className="text-sm uppercase tracking-wider text-surface-500">Inspection Status</CardTitle>
+          </CardHeader>
+          <CardContent className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-surface-500 font-medium">CURRENT STATUS</p>
+                <div className="mt-1">{getStatusBadge(inspection.status)}</div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-surface-500 font-medium">INSPECTION ID</p>
+                <p className="text-sm font-semibold text-surface-900 font-mono">{inspection.inspection_id}</p>
+              </div>
+            </div>
+            <div className="space-y-3 pt-3 border-t border-surface-100">
+              <div className="flex items-start gap-3">
+                <Clock className="h-4 w-4 text-surface-400 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-surface-500 font-medium">SCHEDULED FOR</p>
+                  <p className="text-sm text-surface-900">{formatDateTime(inspection.scheduled_date)}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Clock className="h-4 w-4 text-primary-500 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-surface-500 font-medium">STARTED AT</p>
+                  <p className="text-sm text-surface-900">{formatDateTime(inspection.started_at)}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <FileCheck2 className="h-4 w-4 text-green-500 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-surface-500 font-medium">SUBMITTED AT</p>
+                  <p className="text-sm text-surface-900">{formatDateTime(inspection.submitted_at)}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── Map + Workflow Actions (full-width) ────────────────────────── */}
+        <Card className="border-surface-200 shadow-sm md:col-span-2">
+          <CardHeader className="bg-surface-50 border-b border-surface-200 pb-4">
+            <CardTitle className="text-sm uppercase tracking-wider text-surface-500">Geospatial Target</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="h-48 bg-surface-200 relative w-full flex items-center justify-center border-b border-surface-200">
+              <div
+                className="absolute inset-0 opacity-20"
+                style={{
+                  backgroundImage: 'radial-gradient(circle at 2px 2px, #475569 1px, transparent 0)',
+                  backgroundSize: '24px 24px',
+                }}
+              />
+              <div className="relative flex flex-col items-center">
+                <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center shadow-lg ring-4 ring-white">
+                  <MapPin className="h-6 w-6 text-primary-600" />
+                </div>
+                <div className="mt-3 bg-white px-3 py-1.5 rounded-lg shadow-sm text-sm font-medium border border-surface-200">
+                  Target: {inspection.latitude}, {inspection.longitude}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="p-5 flex flex-col gap-3 border-t border-surface-200">
+            {isSubmittedOrCompleted ? (
+              /* Already submitted — show analysis view */
+              <Button
+                size="lg"
+                className="w-full text-base h-12"
+                onClick={() =>
+                  navigate(`/inspector/inspections/${inspection.inspection_id}/analysis`)
+                }
+              >
+                <Brain className="mr-2 h-5 w-5" />
+                View AI Analysis &amp; Risk Result
+              </Button>
+            ) : (
+              <>
+                <p className="text-center text-sm text-surface-500 w-full">
+                  Complete each step below to submit this inspection.
+                </p>
+
+                {/* Step 1 */}
+                <Button
+                  size="lg"
+                  className="w-full text-base h-12"
+                  onClick={() =>
+                    navigate(`/inspector/inspections/${inspection.inspection_id}/location`)
+                  }
+                >
+                  <Navigation className="mr-2 h-5 w-5" />
+                  1. Verify Location
+                </Button>
+
+                {/* Step 2 */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full text-base h-12"
+                  onClick={() =>
+                    navigate(`/inspector/inspections/${inspection.inspection_id}/evidence`)
+                  }
+                >
+                  <Camera className="mr-2 h-5 w-5" />
+                  2. Capture Evidence
+                </Button>
+
+                {/* Step 3 */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full text-base h-12"
+                  onClick={() =>
+                    navigate(`/inspector/inspections/${inspection.inspection_id}/analysis`)
+                  }
+                >
+                  <Brain className="mr-2 h-5 w-5" />
+                  3. AI Analysis &amp; Risk Score
+                </Button>
+
+                {/* Step 4 */}
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full text-base h-12 border-green-300 text-green-700 hover:bg-green-50"
+                  onClick={() =>
+                    navigate(`/inspector/inspections/${inspection.inspection_id}/submit`)
+                  }
+                >
+                  <Send className="mr-2 h-5 w-5" />
+                  4. Submit Inspection
+                </Button>
+              </>
+            )}
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
+  );
+};
