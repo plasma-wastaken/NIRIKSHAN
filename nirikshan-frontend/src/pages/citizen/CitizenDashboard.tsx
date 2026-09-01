@@ -5,11 +5,17 @@ import { useAuth } from '../../context/AuthContext';
 import { useComplaints } from '../../context/ComplaintContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
+import { SiteMap } from '../../components/map/SiteMap';
+import { mockMapSites } from '../../data/mockMapSites';
 
 export const CitizenDashboard: React.FC = () => {
   const { currentUser } = useAuth();
   const { complaints } = useComplaints();
   const navigate = useNavigate();
+
+  if (!currentUser) {
+    return null;
+  }
 
   const myComplaints = complaints.filter(c => c.citizen_id === currentUser.user_id);
   

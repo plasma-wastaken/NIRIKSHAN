@@ -132,6 +132,11 @@ function getNotifGroups(role: UserRole): NotifGroup[] {
 
 export const NotificationsPage: React.FC = () => {
   const { currentUser } = useAuth();
+  
+  if (!currentUser) {
+    return null;
+  }
+  
   const groups = getNotifGroups(currentUser.role);
 
   // Build initial toggle state — all enabled by default

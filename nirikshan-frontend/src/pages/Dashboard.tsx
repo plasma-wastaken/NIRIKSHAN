@@ -9,13 +9,14 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   ListTodo,
-  Map as MapIcon,
   RefreshCw,
   ArrowRight
 } from 'lucide-react';
 import { mockKpiData } from '../data/mockDashboard';
 import type { DashboardInspection } from '../data/mockDashboard';
 import { useInspections } from '../context/InspectionContext';
+import { SiteMap } from '../components/map/SiteMap';
+import { mockMapSites } from '../data/mockMapSites';
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -215,39 +216,14 @@ export const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Map Panel Mock */}
+        {/* Map Panel */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-surface-900">Location Overview</h2>
-          <Card className="h-[400px] flex flex-col overflow-hidden border-surface-200">
-            {/* Mock Map UI */}
-            <div className="flex-1 bg-surface-100 relative">
-              {/* Map background stub (dots pattern to simulate map grid) */}
-              <div className="absolute inset-0 opacity-20" 
-                   style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #94a3b8 1px, transparent 0)', backgroundSize: '24px 24px' }}>
-              </div>
-              
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <MapIcon className="h-12 w-12 text-surface-300 mb-2" />
-                <span className="text-surface-400 font-medium text-sm">Interactive Map</span>
-                <span className="text-surface-400 text-xs">(Awaiting Geospatial Integration)</span>
-              </div>
-
-              {/* Mock pins */}
-              <div className="absolute top-[30%] left-[40%] flex flex-col items-center">
-                <div className="h-4 w-4 rounded-full bg-primary-500 ring-4 ring-primary-500/30 shadow-lg"></div>
-                <span className="mt-1 font-semibold text-[10px] text-surface-700 bg-white/80 px-1 rounded backdrop-blur-sm">SITE-802</span>
-              </div>
-              
-              <div className="absolute top-[60%] left-[65%] flex flex-col items-center">
-                <div className="h-4 w-4 rounded-full bg-yellow-500 ring-4 ring-yellow-500/30 shadow-lg"></div>
-                <span className="mt-1 font-semibold text-[10px] text-surface-700 bg-white/80 px-1 rounded backdrop-blur-sm">SITE-415</span>
-              </div>
-            </div>
-            <div className="p-3 bg-white border-t border-surface-200 flex items-center justify-between text-xs text-surface-600">
-              <span>Showing 4 nearby sites</span>
-              <Button variant="ghost" size="sm" className="h-7 text-xs">Full Map</Button>
-            </div>
-          </Card>
+          <SiteMap
+            sites={mockMapSites.slice(0, 6)}
+            height="400px"
+            showLegend={true}
+          />
         </div>
       </div>
     </div>

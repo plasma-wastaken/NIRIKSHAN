@@ -14,6 +14,10 @@ export const CitizenComplaints: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   
+  if (!currentUser) {
+    return null;
+  }
+  
   const myComplaints = complaints.filter(c => c.citizen_id === currentUser.user_id);
   
   const filtered = myComplaints.filter(c => 

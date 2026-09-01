@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { uploadEvidence } from '../services/api';
 import { 
   Camera, 
   Video, 
@@ -133,7 +134,7 @@ export const EvidenceCapture: React.FC = () => {
     }
   };
 
-  const handleNewEvidence = (fileUrl: string, type: 'PHOTO' | 'VIDEO') => {
+  const handleNewEvidence = async (fileUrl: string, type: 'PHOTO' | 'VIDEO') => {
     const newEvidence: EvidenceItem = {
       evidence_id: `EV-${evidenceCounter}`,
       inspection_id: inspectionId || 'UNKNOWN',
@@ -148,10 +149,33 @@ export const EvidenceCapture: React.FC = () => {
 
     setEvidenceCounter(prev => prev + 1);
     setEvidenceList(prev => [newEvidence, ...prev]);
-    simulateUploadProcess(newEvidence.evidence_id);
+
+    // Convert data URL to File for API upload
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `evidence-${evidenceCounter}.${type === 'PHOTO' ? 'jpg' : 'webm'}`, {
+        type: type === 'PHOTO' ? 'image/jpeg' : 'video/webm'
+      });
+
+      // Call the API to upload evidence
+      const result = await uploadEvidence(file, inspectionId || 'UNKNOWN');
+      
+      // Update evidence with server response
+      updateEvidence(newEvidence.evidence_id, {
+        status: 'PROCESSED',
+        progress: 100,
+        hash_sha256: result.hash_sha256,
+        file_path: result.file_path // Use server-returned file path
+      });
+    } catch (error) {
+      console.error('Upload failed:', error);
+      // Fallback to simulation if API fails
+      simulateUploadProcess(newEvidence.evidence_id, null);
+    }
   };
 
-  const simulateUploadProcess = (id: string) => {
+  const simulateUploadProcess = async (id: string, _file: File | null) => {
     let progress = 0;
     const uploadInterval = setInterval(() => {
       progress += 20;
@@ -161,6 +185,8 @@ export const EvidenceCapture: React.FC = () => {
         clearInterval(uploadInterval);
         updateEvidence(id, { status: 'PROCESSING' });
         
+        // In a real implementation, this would call the API
+        // For now, we simulate the response
         setTimeout(() => {
           const isSuccess = Math.random() > 0.2;
           if (isSuccess) {
@@ -196,7 +222,7 @@ export const EvidenceCapture: React.FC = () => {
 
   const handleRetry = (id: string) => {
     updateEvidence(id, { status: 'UPLOADING', progress: 0, hash_sha256: undefined });
-    simulateUploadProcess(id);
+    simulateUploadProcess(id, null);
   };
 
   const getStatusDisplay = (status: EvidenceStatus, progress: number) => {

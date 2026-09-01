@@ -11,6 +11,10 @@ export const SettingsLayout: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
+  if (!currentUser) {
+    return null; // or redirect to login
+  }
+
   // Create base path (e.g. '/inspector' or '/citizen')
   const basePortalPath = ROLE_HOME[currentUser.role]?.split('/dashboard')[0] || '/inspector';
   const basePath = `${basePortalPath}/profile`;

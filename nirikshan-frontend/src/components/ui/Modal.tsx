@@ -7,9 +7,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  size?: 'small' | 'medium' | 'large';
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer, size = 'medium' }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -23,6 +24,12 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
 
   if (!isOpen) return null;
 
+  const sizeClasses = {
+    small: 'max-w-md',
+    medium: 'max-w-lg',
+    large: 'max-w-4xl'
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div 
@@ -30,7 +37,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
         onClick={onClose}
       />
       
-      <div className="relative z-10 w-full max-w-lg rounded-xl bg-white shadow-xl flex flex-col max-h-[90vh]">
+      <div className={`relative z-10 w-full ${sizeClasses[size]} rounded-xl bg-white shadow-xl flex flex-col max-h-[90vh]`}>
         <div className="flex items-center justify-between border-b border-surface-200 px-6 py-4">
           <h3 className="text-lg font-semibold text-surface-900">{title}</h3>
           <button

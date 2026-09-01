@@ -14,6 +14,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const location = useLocation();
   const { currentUser, logout } = useAuth();
   
+  if (!currentUser) {
+    return null;
+  }
+  
   const navItems = ROLE_NAV[currentUser.role] || [];
   const homePath = ROLE_HOME[currentUser.role] || '/';
 

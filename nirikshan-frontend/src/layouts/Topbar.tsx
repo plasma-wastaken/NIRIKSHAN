@@ -15,6 +15,10 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
   
+  if (!currentUser) {
+    return null;
+  }
+  
   const basePortalPath = ROLE_HOME[currentUser.role]?.split('/dashboard')[0] || '/inspector';
   
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,6 +45,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick }) => {
   }, [location.pathname]);
 
   const getPageTitle = () => {
+    if (!currentUser) return 'NIRIKSHAN';
+    
     const path = location.pathname;
     const search = location.search;
     

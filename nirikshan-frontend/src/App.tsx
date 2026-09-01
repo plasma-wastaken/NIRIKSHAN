@@ -2,8 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ComplaintProvider } from './context/ComplaintContext';
 import { InspectionProvider } from './context/InspectionContext';
+import { TicketProvider } from './context/TicketContext';
+import { LanguageProvider } from './context/LanguageContext';
 import { AppShell } from './layouts/AppShell';
 import { Login } from './pages/Login';
+import { Error403 } from './pages/Error403';
+import { InspectorRoute, SupervisorRoute, CitizenRoute, AdminRoute } from './components/auth/ProtectedRoute';
 
 // Inspector Pages
 import { Dashboard } from './pages/Dashboard';
@@ -28,6 +32,8 @@ import { CitizenDashboard } from './pages/citizen/CitizenDashboard';
 import { CitizenComplaints } from './pages/citizen/CitizenComplaints';
 import { SubmitComplaint } from './pages/citizen/SubmitComplaint';
 import { ComplaintDetail } from './pages/citizen/ComplaintDetail';
+import { CitizenTickets } from './pages/citizen/CitizenTickets';
+import { CitizenReports } from './pages/citizen/CitizenReports';
 
 // Admin Pages
 import { 
@@ -46,15 +52,22 @@ import { PreferencesPage } from './pages/profile/PreferencesPage';
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <InspectionProvider>
-          <ComplaintProvider>
-            <Routes>
-              <Route path="/" element={<Navigate to="/login" replace />} />
-              <Route path="/login" element={<Login />} />
+      <LanguageProvider>
+        <AuthProvider>
+          <InspectionProvider>
+            <ComplaintProvider>
+              <TicketProvider>
+                <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/403" element={<Error403 />} />
               
               {/* Protected Inspector Routes */}
-              <Route path="/inspector" element={<AppShell />}>
+              <Route path="/inspector" element={
+                <InspectorRoute>
+                  <AppShell />
+                </InspectorRoute>
+              }>
                 <Route index element={<Navigate to="/inspector/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="inspections" element={<Inspections />} />
@@ -75,7 +88,11 @@ function App() {
               </Route>
 
               {/* Protected Supervisor Routes */}
-              <Route path="/supervisor" element={<AppShell />}>
+              <Route path="/supervisor" element={
+                <SupervisorRoute>
+                  <AppShell />
+                </SupervisorRoute>
+              }>
                 <Route index element={<Navigate to="/supervisor/dashboard" replace />} />
                 <Route path="dashboard" element={<SupervisorDashboard />} />
                 <Route path="reviews" element={<SupervisorReviews />} />
@@ -94,7 +111,11 @@ function App() {
               </Route>
 
               {/* Protected Citizen Routes */}
-              <Route path="/citizen" element={<AppShell />}>
+              <Route path="/citizen" element={
+                <CitizenRoute>
+                  <AppShell />
+                </CitizenRoute>
+              }>
                 <Route index element={<Navigate to="/citizen/dashboard" replace />} />
                 <Route path="dashboard" element={<CitizenDashboard />} />
                 
@@ -102,6 +123,12 @@ function App() {
                 <Route path="complaints" element={<CitizenComplaints />} />
                 <Route path="complaints/new" element={<SubmitComplaint />} />
                 <Route path="complaints/:complaintId" element={<ComplaintDetail />} />
+
+                {/* Tickets */}
+                <Route path="tickets" element={<CitizenTickets />} />
+
+                {/* Reports */}
+                <Route path="reports" element={<CitizenReports />} />
                 
                 {/* Profile & Settings (Reusing the identical module) */}
                 <Route path="profile" element={<SettingsLayout />}>
@@ -113,7 +140,11 @@ function App() {
               </Route>
 
               {/* Protected Admin Routes */}
-              <Route path="/admin" element={<AppShell />}>
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AppShell />
+                </AdminRoute>
+              }>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="inspections" element={<AdminInspections />} />
@@ -139,10 +170,12 @@ function App() {
                 </Route>
               </Route>
 
-            </Routes>
+              </Routes>
+            </TicketProvider>
           </ComplaintProvider>
         </InspectionProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

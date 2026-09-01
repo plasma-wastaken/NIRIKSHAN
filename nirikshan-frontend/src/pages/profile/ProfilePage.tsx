@@ -66,6 +66,11 @@ interface EditFormProps {
 
 const EditForm: React.FC<EditFormProps> = ({ onCancel }) => {
   const { currentUser, updateProfile } = useAuth();
+  
+  if (!currentUser) {
+    return null;
+  }
+  
   const [name,  setName]  = useState(currentUser.name);
   const [email, setEmail] = useState(currentUser.email);
   const [phone, setPhone] = useState(currentUser.phone);
@@ -162,6 +167,10 @@ const EditForm: React.FC<EditFormProps> = ({ onCancel }) => {
 export const ProfilePage: React.FC = () => {
   const { currentUser } = useAuth();
   const [editing, setEditing] = useState(false);
+
+  if (!currentUser) {
+    return null;
+  }
 
   const activity = getRoleActivity(currentUser.role);
 

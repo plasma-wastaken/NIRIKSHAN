@@ -16,6 +16,30 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useInspections } from '../context/InspectionContext';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon paths broken by bundlers
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom icon for site marker
+const siteIcon = L.divIcon({
+  className: 'custom-site-icon',
+  html: `<div style="background-color: #1e293b; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+    </svg>
+  </div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+  popupAnchor: [0, -16]
+});
 
 export const InspectionDetails: React.FC = () => {
   const { inspectionId } = useParams<{ inspectionId: string }>();
@@ -149,22 +173,28 @@ export const InspectionDetails: React.FC = () => {
             <CardTitle className="text-sm uppercase tracking-wider text-surface-500">Geospatial Target</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="h-48 bg-surface-200 relative w-full flex items-center justify-center border-b border-surface-200">
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: 'radial-gradient(circle at 2px 2px, #475569 1px, transparent 0)',
-                  backgroundSize: '24px 24px',
-                }}
-              />
-              <div className="relative flex flex-col items-center">
-                <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center shadow-lg ring-4 ring-white">
-                  <MapPin className="h-6 w-6 text-primary-600" />
-                </div>
-                <div className="mt-3 bg-white px-3 py-1.5 rounded-lg shadow-sm text-sm font-medium border border-surface-200">
-                  Target: {inspection.latitude}, {inspection.longitude}
-                </div>
-              </div>
+            <div className="h-48 relative w-full">
+              <MapContainer
+                center={[inspection.latitude, inspection.longitude]}
+                zoom={15}
+                style={{ height: '100%', width: '100%' }}
+                scrollWheelZoom={false}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                
+                <Marker position={[inspection.latitude, inspection.longitude]} icon={siteIcon}>
+                  <Popup>
+                    <div className="text-sm">
+                      <p className="font-bold">{inspection.site_name}</p>
+                      <p className="text-xs text-gray-600">{inspection.address}</p>
+                      <p className="text-xs text-gray-500 mt-1">{inspection.latitude.toFixed(5)}, {inspection.longitude.toFixed(5)}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              </MapContainer>
             </div>
           </CardContent>
 

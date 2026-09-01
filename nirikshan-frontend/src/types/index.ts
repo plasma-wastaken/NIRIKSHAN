@@ -15,9 +15,12 @@ export type EvidenceType = 'PHOTO' | 'VIDEO' | 'AUDIO' | 'DOCUMENT';
 
 export interface EvidenceRecord {
   evidence_id: string;
+  inspection_id: string;
   file_path: string;
   evidence_type: EvidenceType;
   captured_at: string;
+  latitude: number;
+  longitude: number;
   hash_sha256: string;
 }
 
@@ -25,6 +28,7 @@ export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | 'UNASSESSED';
 
 export interface RiskScoreRecord {
   risk_score_id: string;
+  inspection_id: string;
   score: number;
   risk_level: RiskLevel;
   factors: Record<string, number>;
@@ -39,14 +43,22 @@ export interface ComplaintRecord {
   citizen_id: string;
   category: string;
   description: string;
+  latitude: number;
+  longitude: number;
+  status: ComplaintStatus;
 }
 
 export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
 
 export interface TicketRecord {
   ticket_id: string;
+  complaint_id: string;
+  inspection_id: string | null;
   owner_id: string;
   priority: TicketPriority;
+  status: TicketStatus;
+  created_at: string;
   sla_deadline: string;
 }
 
@@ -61,7 +73,7 @@ export interface AuditRecord {
   after_state: any;
 }
 
-// Extraneous types for UI display, if necessary
+// UI-specific types that extend base SRS types for display purposes
 export interface InspectionDetail extends InspectionRecord {
   site_name: string;
   address: string;
@@ -72,9 +84,6 @@ export interface InspectionDetail extends InspectionRecord {
 }
 
 export interface ComplaintDetail extends ComplaintRecord {
-  latitude: number;
-  longitude: number;
-  status: ComplaintStatus;
   created_at: string;
   evidence_files: EvidenceRecord[];
   ticket_id?: string;

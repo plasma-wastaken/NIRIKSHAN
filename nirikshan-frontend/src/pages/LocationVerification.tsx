@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -11,6 +11,59 @@ import {
   Camera
 } from 'lucide-react';
 import { useInspections } from '../context/InspectionContext';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet default icon paths broken by bundlers
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+// Custom icon for site marker
+const siteIcon = L.divIcon({
+  className: 'custom-site-icon',
+  html: `<div style="background-color: #1e293b; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+    </svg>
+  </div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+  popupAnchor: [0, -16]
+});
+
+// Custom icon for inspector marker
+const inspectorIcon = L.divIcon({
+  className: 'custom-inspector-icon',
+  html: `<div style="background-color: #3b82f6; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+  </div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 16],
+  popupAnchor: [0, -16]
+});
+
+// Component to handle map bounds and centering
+const MapController: React.FC<{ center: [number, number]; inspectorPos?: [number, number] }> = ({ center, inspectorPos }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (inspectorPos) {
+      const bounds = L.latLngBounds([center, inspectorPos]);
+      map.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+      map.setView(center, 16);
+    }
+  }, [center, inspectorPos, map]);
+  
+  return null;
+};
 
 type VerificationStatus = 'IDLE' | 'CHECKING' | 'SUCCESS' | 'WARNING';
 
@@ -57,48 +110,81 @@ export const LocationVerification: React.FC = () => {
       </div>
 
       <Card className="border-surface-200 overflow-hidden shadow-sm">
-        {/* Map Visualization (Mock) */}
-        <div className="h-64 bg-surface-200 relative w-full flex items-center justify-center border-b border-surface-200">
-          <div className="absolute inset-0 opacity-20" 
-               style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #475569 1px, transparent 0)', backgroundSize: '24px 24px' }}>
-          </div>
-          
-          <div className="relative w-full h-full">
-            {/* Inspection Radius Mock */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full border-2 border-primary-400 bg-primary-100/30"></div>
+        {/* Leaflet Map */}
+        <div className="h-64 relative w-full border-b border-surface-200">
+          <MapContainer
+            center={[inspection.latitude, inspection.longitude]}
+            zoom={16}
+            style={{ height: '100%', width: '100%' }}
+            scrollWheelZoom={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            
+            <MapController 
+              center={[inspection.latitude, inspection.longitude]}
+              inspectorPos={status !== 'IDLE' ? [
+                status === 'WARNING' ? inspection.latitude + 0.01 : mockBackendResponse.inspectorLocation.latitude,
+                status === 'WARNING' ? inspection.longitude - 0.01 : mockBackendResponse.inspectorLocation.longitude
+              ] : undefined}
+            />
+            
+            {/* Geofence radius circle */}
+            <Circle
+              center={[inspection.latitude, inspection.longitude]}
+              radius={50}
+              pathOptions={{
+                color: '#3b82f6',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.1,
+                weight: 2
+              }}
+            />
             
             {/* Assigned Site Marker */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-10">
-              <div className="h-8 w-8 rounded-full bg-surface-900 flex items-center justify-center shadow-lg ring-2 ring-white">
-                <MapPin className="h-4 w-4 text-white" />
-              </div>
-              <span className="mt-1 text-[10px] font-bold text-surface-900 bg-white/90 px-1.5 py-0.5 rounded backdrop-blur-sm shadow-sm whitespace-nowrap">
-                Assigned Site
-              </span>
-            </div>
-
-            {/* Inspector Marker (only show after/during check for dramatic effect, or show it slightly off center) */}
-            {status !== 'IDLE' && (
-              <div 
-                className="absolute top-[48%] left-[53%] flex flex-col items-center transition-all duration-1000 ease-in-out z-20"
-                style={{
-                  top: status === 'WARNING' ? '20%' : '48%',
-                  left: status === 'WARNING' ? '20%' : '53%'
-                }}
-              >
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center shadow-lg ring-2 ring-white ${status === 'WARNING' ? 'bg-red-500' : 'bg-primary-500'}`}>
-                  <Navigation className="h-4 w-4 text-white" />
+            <Marker position={[inspection.latitude, inspection.longitude]} icon={siteIcon}>
+              <Popup>
+                <div className="text-sm">
+                  <p className="font-bold">{inspection.site_name}</p>
+                  <p className="text-xs text-gray-600">Assigned Inspection Site</p>
                 </div>
-                <span className="mt-1 text-[10px] font-bold text-surface-900 bg-white/90 px-1.5 py-0.5 rounded backdrop-blur-sm shadow-sm whitespace-nowrap">
-                  You
-                </span>
-              </div>
+              </Popup>
+            </Marker>
+            
+            {/* Inspector Location Marker (shown after verification) */}
+            {status !== 'IDLE' && (
+              <Marker 
+                position={[
+                  status === 'WARNING' ? inspection.latitude + 0.01 : mockBackendResponse.inspectorLocation.latitude,
+                  status === 'WARNING' ? inspection.longitude - 0.01 : mockBackendResponse.inspectorLocation.longitude
+                ]}
+                icon={status === 'WARNING' ? 
+                  L.divIcon({
+                    className: 'custom-inspector-icon-warning',
+                    html: `<div style="background-color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                      </svg>
+                    </div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -16]
+                  }) : inspectorIcon
+                }
+              >
+                <Popup>
+                  <div className="text-sm">
+                    <p className="font-bold">Your Location</p>
+                    <p className="text-xs text-gray-600">
+                      {status === 'WARNING' ? 'Outside geofence' : 'Within geofence'}
+                    </p>
+                  </div>
+                </Popup>
+              </Marker>
             )}
-          </div>
-          
-          <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-medium text-surface-700 shadow-sm border border-surface-200">
-            Awaiting Geospatial Integration
-          </div>
+          </MapContainer>
         </div>
 
         <CardContent className="p-0">

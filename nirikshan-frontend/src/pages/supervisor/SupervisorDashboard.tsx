@@ -5,6 +5,8 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { ClipboardList, ShieldAlert, AlertTriangle, CheckSquare } from 'lucide-react';
 import { useInspections } from '../../context/InspectionContext';
+import { SiteMap } from '../../components/map/SiteMap';
+import { mockMapSites } from '../../data/mockMapSites';
 
 export const SupervisorDashboard: React.FC = () => {
   const { inspections } = useInspections();
@@ -102,6 +104,16 @@ export const SupervisorDashboard: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Site Map — high-risk sites highlighted */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-surface-900">High-Risk Sites Overview</h2>
+        <SiteMap
+          sites={mockMapSites.filter(s => s.risk_level === 'CRITICAL' || s.risk_level === 'HIGH')}
+          height="420px"
+          showLegend={true}
+        />
+      </div>
     </div>
   );
 };

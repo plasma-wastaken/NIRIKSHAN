@@ -22,6 +22,7 @@ import {
   type InspectionMLResult,
   type RiskLevel,
 } from '../data/mockMLResults';
+import { mlService } from '../services/mlService';
 
 // ─── Processing pipeline steps ────────────────────────────────────────────────
 
@@ -464,6 +465,8 @@ export const AnalysisResult: React.FC = () => {
   const [pipelineStep, setPipelineStep] = useState(0);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [mlResult, setMlResult] = useState<InspectionMLResult | null>(null);
+  const [usingRealML, setUsingRealML] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!inspectionId) return;
@@ -477,10 +480,58 @@ export const AnalysisResult: React.FC = () => {
       setPipelineStep(step);
 
       if (step >= stepCount) {
-        // All steps done — load ML result and show results
-        setTimeout(() => {
-          setMlResult(getMockMLResult(inspectionId));
-          setAnalysisComplete(true);
+        // All steps done — try to get real ML result first, fall back to mock
+        setTimeout(async () => {
+          try {
+            // Try to call real ML service
+            try {
+              const realResult = await mlService.runAnalysis(inspectionId, [{
+                evidence_id: `EV-${inspectionId}-1`,
+                file_path: `/uploads/${inspectionId}/evidence1.jpg`,
+                latitude: 28.6139,
+                longitude: 77.2090,
+                captured_at: new Date().toISOString()
+              }]);
+              
+              // Convert real ML result to expected format
+              setMlResult({
+                cv_validation: {
+                  is_valid: true,
+                  confidence: realResult.confidence,
+                  flags: [],
+                  detected_issues: [],
+                  validation_type: 'integrity_check'
+                },
+                similarity_check: {
+                  similarity_score: 0.0,
+                  flagged: false,
+                  matched_evidence_id: null,
+                  method: 'cosine_similarity'
+                },
+                anomaly_scoring: {
+                  score: realResult.overall_risk_score,
+                  risk_level: realResult.risk_level as RiskLevel,
+                  confidence: realResult.confidence,
+                  factors: realResult.anomaly_factors,
+                  computed_at: realResult.scored_at
+                }
+              });
+              setUsingRealML(true);
+              setAnalysisComplete(true);
+            } catch (mlError) {
+              console.log('ML service not available, using mock data:', mlError);
+              // Fall back to mock data
+              setMlResult(getMockMLResult(inspectionId));
+              setUsingRealML(false);
+              setAnalysisComplete(true);
+            }
+          } catch (e) {
+            console.error('Error running analysis:', e);
+            setError('Failed to run analysis. Using mock data.');
+            setMlResult(getMockMLResult(inspectionId));
+            setUsingRealML(false);
+            setAnalysisComplete(true);
+          }
         }, 600);
       } else {
         setTimeout(advance, 700);

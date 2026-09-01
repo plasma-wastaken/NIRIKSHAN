@@ -13,9 +13,12 @@ export const MOCK_COMPLAINTS: ComplaintDetail[] = [
     evidence_files: [
       { 
         evidence_id: 'EV-1001', 
+        inspection_id: 'INS-1001',
         file_path: '#', 
         evidence_type: 'PHOTO', 
         captured_at: '2026-08-20T10:25:00Z', 
+        latitude: 28.6139,
+        longitude: 77.2090,
         hash_sha256: 'abc123hash'
       }
     ],
@@ -34,9 +37,12 @@ export const MOCK_COMPLAINTS: ComplaintDetail[] = [
     evidence_files: [
       { 
         evidence_id: 'EV-1002', 
+        inspection_id: 'INS-1002',
         file_path: '#', 
         evidence_type: 'PHOTO', 
         captured_at: '2026-08-25T14:10:00Z', 
+        latitude: 28.6200,
+        longitude: 77.2100,
         hash_sha256: 'def456hash'
       }
     ],
