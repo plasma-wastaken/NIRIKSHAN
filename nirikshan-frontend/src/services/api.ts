@@ -524,5 +524,5 @@ export function clearAuthToken() {
 // EXPORTS
 // ============================================================================
 
-export { ApiClient, MockApiClient };
+export { ApiClient, MockApiClient, apiClient as api };
 export const useMockApi = USE_MOCK_API;

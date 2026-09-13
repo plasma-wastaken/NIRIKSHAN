@@ -1,4 +1,4 @@
-# NIRIKSHAN - Construction Compliance Monitoring System
+# NIRIKSHAN - Inspection Compliance Monitoring System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -12,18 +12,21 @@ NIRIKSHAN is a comprehensive construction compliance monitoring system that leve
 ## ✨ Key Features
 
 ### 🔍 Smart Inspection Management
+
 - **Digital Inspection Workflows**: Streamlined inspection creation, management, and submission
 - **Geospatial Tracking**: GPS-based location tracking for inspection sites
 - **Evidence Management**: Upload and manage photos, videos, and documents
 - **Multi-language Support**: Hindi and English language support
 
 ### 🤖 AI-Powered Analysis
+
 - **Risk Scoring**: ML-based risk assessment for construction sites
 - **Anomaly Detection**: Automatic detection of unusual patterns in evidence
 - **Computer Vision Validation**: Image integrity and compliance checking
 - **Similarity Detection**: Identify potential duplicate evidence
 
 ### 👥 Role-Based Access Control
+
 - **Citizens**: File complaints and track progress
 - **Inspectors**: Conduct inspections and submit evidence
 - **Supervisors**: Review inspections and approve submissions
@@ -31,6 +34,7 @@ NIRIKSHAN is a comprehensive construction compliance monitoring system that leve
 - **Government Admins**: System-wide oversight and reporting
 
 ### 📊 Comprehensive Dashboard
+
 - **Real-time Statistics**: Track inspection metrics and compliance rates
 - **Interactive Maps**: Visual representation of inspection locations
 - **Performance Analytics**: Monitor inspector performance and site compliance
@@ -72,28 +76,29 @@ NIRIKSHAN/
 ### Backend Setup
 
 1. **Navigate to backend directory**
+
    ```bash
    cd backend
    ```
-
 2. **Create virtual environment**
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-
 3. **Install dependencies**
+
    ```bash
    pip install -r requirements.txt
    ```
-
 4. **Configure environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
-
 5. **Start the backend server**
+
    ```bash
    python main.py
    ```
@@ -103,16 +108,17 @@ The backend will start on `http://localhost:8000`
 ### Frontend Setup
 
 1. **Navigate to frontend directory**
+
    ```bash
    cd nirikshan-frontend
    ```
-
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
-
 3. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -132,12 +138,12 @@ python test_ml_integration.py
 
 For testing purposes, use these credentials:
 
-| Role | Username | Password |
-|------|----------|----------|
-| Inspector | inspector001 | password123 |
-| Supervisor | supervisor001 | password123 |
-| Department Admin | admin001 | password123 |
-| Citizen | citizen001 | password123 |
+| Role             | Username      | Password    |
+| ---------------- | ------------- | ----------- |
+| Inspector        | inspector001  | password123 |
+| Supervisor       | supervisor001 | password123 |
+| Department Admin | admin001      | password123 |
+| Citizen          | citizen001    | password123 |
 
 ## 📋 API Documentation
 
@@ -170,6 +176,7 @@ Once the backend is running, visit `http://localhost:8000/docs` for interactive 
 ### ML Integration
 
 The system provides automatic fallback mechanisms:
+
 1. **Primary**: Use trained ML models
 2. **Secondary**: Rule-based detection if ML models fail
 3. **Tertiary**: Mock data if ML service is unavailable
@@ -177,6 +184,7 @@ The system provides automatic fallback mechanisms:
 ## 🛠️ Technology Stack
 
 ### Backend
+
 - **Framework**: FastAPI 0.115
 - **Database**: PostgreSQL with SQLAlchemy ORM
 - **Authentication**: JWT with bcrypt password hashing
@@ -184,6 +192,7 @@ The system provides automatic fallback mechanisms:
 - **API Documentation**: Swagger/OpenAPI
 
 ### Frontend
+
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
@@ -193,6 +202,7 @@ The system provides automatic fallback mechanisms:
 - **HTTP Client**: Axios
 
 ### DevOps
+
 - **Version Control**: Git
 - **Package Management**: pip (Python), npm (Node.js)
 - **Code Quality**: ESLint, Prettier, Oxlint
@@ -200,6 +210,7 @@ The system provides automatic fallback mechanisms:
 ## 📁 Project Structure
 
 ### Backend Structure
+
 ```
 backend/
 ├── routers/              # API route handlers
@@ -226,6 +237,7 @@ backend/
 ```
 
 ### Frontend Structure
+
 ```
 nirikshan-frontend/
 ├── src/
@@ -254,18 +266,21 @@ nirikshan-frontend/
 ## 🧪 Testing
 
 ### Backend Testing
+
 ```bash
 cd backend
 pytest
 ```
 
 ### ML Integration Testing
+
 ```bash
 cd backend
 python test_ml_integration.py
 ```
 
 ### Frontend Testing
+
 ```bash
 cd nirikshan-frontend
 npm test
@@ -274,6 +289,7 @@ npm test
 ## 📝 Environment Variables
 
 ### Backend (.env)
+
 ```env
 # Database
 DATABASE_URL=postgresql://user:password@localhost:5432/nirikshan
@@ -294,6 +310,7 @@ PORT=8000
 ```
 
 ### Frontend (.env)
+
 ```env
 VITE_API_BASE_URL=http://localhost:8000
 VITE_USE_MOCK_API=false
@@ -302,6 +319,7 @@ VITE_USE_MOCK_API=false
 ## 🚢 Deployment
 
 ### Backend Deployment
+
 1. Set up PostgreSQL database
 2. Configure environment variables
 3. Run database migrations: `alembic upgrade head`
@@ -309,6 +327,7 @@ VITE_USE_MOCK_API=false
 5. Deploy using Gunicorn or similar WSGI server
 
 ### Frontend Deployment
+
 1. Build the application: `npm run build`
 2. Deploy the `dist/` folder to your web server
 3. Configure reverse proxy for API routing
@@ -333,6 +352,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support, please contact:
+
 - Email: support@nirikshan.gov.in
 - Documentation: See individual component READMEs
 - Issues: Please use the GitHub issue tracker
@@ -340,18 +360,21 @@ For support, please contact:
 ## 🗺️ Roadmap
 
 ### Phase 1 (Current)
+
 - ✅ Basic inspection management
 - ✅ Evidence upload and management
 - ✅ ML-powered risk analysis
 - ✅ Multi-language support
 
 ### Phase 2 (Upcoming)
+
 - [ ] Mobile application (React Native)
 - [ ] Advanced analytics dashboard
 - [ ] Real-time notifications
 - [ ] Integration with government databases
 
 ### Phase 3 (Future)
+
 - [ ] Blockchain-based evidence verification
 - [ ] Advanced computer vision models
 - [ ] Predictive maintenance features

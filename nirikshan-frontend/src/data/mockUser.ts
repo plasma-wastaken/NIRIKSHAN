@@ -48,7 +48,7 @@ export const MOCK_USERS: Record<UserRole, MockUser> = {
     role: 'SUPERVISOR',
     account_status: 'ACTIVE',
     avatar_url: null,
-    joined_at: '2023-11-01T09:00:00Z',
+    joined_at: '2026-09-01T09:00:00Z',
   },
   ADMIN: {
     user_id: 'USR-ADM-001',
@@ -58,7 +58,7 @@ export const MOCK_USERS: Record<UserRole, MockUser> = {
     role: 'ADMIN',
     account_status: 'ACTIVE',
     avatar_url: null,
-    joined_at: '2023-06-20T09:00:00Z',
+    joined_at: '2026-07-20T09:00:00Z',
   },
   CITIZEN: {
     user_id: 'USR-CIT-001',

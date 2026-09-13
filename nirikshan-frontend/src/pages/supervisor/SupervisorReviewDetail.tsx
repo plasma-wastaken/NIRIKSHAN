@@ -145,7 +145,7 @@ export const SupervisorReviewDetail: React.FC = () => {
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-surface-500">Complaint</span>
-                <span className="text-sm font-mono text-primary-600 cursor-pointer hover:underline">CMP-2023-882</span>
+                <span className="text-sm font-mono text-primary-600 cursor-pointer hover:underline">CMP-2026-882</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-surface-500">Ticket</span>

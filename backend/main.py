@@ -1,3 +1,13 @@
+import routers.ml
+import routers.dashboard
+import routers.evidence
+import routers.tickets
+import routers.complaints
+import routers.inspections
+import routers.auth
+from services.repository import Repository
+import ml_bridge
+from routers import auth, inspections, complaints, tickets, evidence, dashboard, ml
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -8,19 +18,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import routers
-from routers import auth, inspections, complaints, tickets, evidence, dashboard, ml
 
 # Import ML bridge (stub for now)
-import ml_bridge
 
 # Import repository (use mock repository for testing)
-from services.repository import Repository
 
 # Initialize repository globally
 repository = Repository()
 
 # Make repository accessible to routers
-import routers.auth, routers.inspections, routers.complaints, routers.tickets, routers.evidence, routers.dashboard, routers.ml
 routers.auth.set_repository(repository)
 routers.inspections.set_repository(repository)
 routers.complaints.set_repository(repository)
@@ -29,17 +35,18 @@ routers.evidence.set_repository(repository)
 routers.dashboard.set_repository(repository)
 routers.ml.set_repository(repository)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Initialize mock data
     repository.initialize_mock_data()
-    
+
     # Create upload directory if it doesn't exist
     upload_dir = os.getenv("UPLOAD_DIR", "./uploads")
     os.makedirs(upload_dir, exist_ok=True)
-    
+
     yield
-    
+
     # Shutdown: Cleanup if needed
     pass
 
@@ -63,14 +70,29 @@ app.add_middleware(
 )
 
 # Health check endpoint
+
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
 
+# Root endpoint
+
+
+@app.get("/")
+async def root():
+    return {
+        "message": "NIRIKSHAN Backend API is running.",
+        "docs_url": "/docs",
+        "health_url": "/health"
+    }
+
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(inspections.router, prefix="/inspections", tags=["Inspections"])
-app.include_router(complaints.router, prefix="/complaints", tags=["Complaints"])
+app.include_router(inspections.router,
+                   prefix="/inspections", tags=["Inspections"])
+app.include_router(complaints.router, prefix="/complaints",
+                   tags=["Complaints"])
 app.include_router(tickets.router, prefix="/tickets", tags=["Tickets"])
 app.include_router(evidence.router, prefix="/evidence", tags=["Evidence"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["Dashboard"])

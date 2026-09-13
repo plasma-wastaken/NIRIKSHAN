@@ -66,7 +66,7 @@ const INITIAL_ITEMS: SyncItem[] = [
   {
     id: 'sync-1',
     type: 'inspection',
-    label: 'INS-2023-1039',
+    label: 'INS-2026-1039',
     description: 'Inspection submission — Riverside Block B',
     sizeMb: 0.8,
     status: 'pending',
@@ -85,7 +85,7 @@ const INITIAL_ITEMS: SyncItem[] = [
   {
     id: 'sync-3',
     type: 'inspection',
-    label: 'INS-2023-1041',
+    label: 'INS-2026-1041',
     description: 'Inspection submission — Sector 12 Construction',
     sizeMb: 0.4,
     status: 'pending',

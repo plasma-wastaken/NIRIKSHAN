@@ -169,8 +169,17 @@ export const InspectionDetails: React.FC = () => {
 
         {/* ── Map + Workflow Actions (full-width) ────────────────────────── */}
         <Card className="border-surface-200 shadow-sm md:col-span-2">
-          <CardHeader className="bg-surface-50 border-b border-surface-200 pb-4">
-            <CardTitle className="text-sm uppercase tracking-wider text-surface-500">Geospatial Target</CardTitle>
+          <CardHeader className="bg-surface-50 border-b border-surface-200 pb-4 flex flex-row items-center justify-between">
+            <CardTitle className="text-sm uppercase tracking-wider text-surface-500 m-0 mt-2">Geospatial Target</CardTitle>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="text-xs font-medium" 
+              onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${inspection.latitude},${inspection.longitude}`, '_blank')}
+            >
+              <Navigation className="mr-1.5 h-3.5 w-3.5" />
+              Navigate
+            </Button>
           </CardHeader>
           <CardContent className="p-0">
             <div className="h-48 relative w-full">

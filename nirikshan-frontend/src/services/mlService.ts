@@ -61,23 +61,20 @@ export interface SimilarityCheckResponse {
 export const mlService = {
   // Run complete ML analysis for an inspection
   async runAnalysis(inspectionId: string, evidenceData: MLAnalysisRequest['evidence_data']): Promise<MLAnalysisResponse> {
-    const response = await api.post('/ml/anomaly-scoring', {
+    return await api.post('/ml/anomaly-scoring', {
       inspection_id: inspectionId,
       evidence_data: evidenceData
     });
-    return response.data;
   },
 
   // Run CV validation on a single evidence
   async runCVValidation(request: CVValidationRequest): Promise<CVValidationResponse> {
-    const response = await api.post('/ml/cv-validation', request);
-    return response.data;
+    return await api.post('/ml/cv-validation', request);
   },
 
   // Run similarity check on evidence
   async runSimilarityCheck(request: SimilarityCheckRequest): Promise<SimilarityCheckResponse> {
-    const response = await api.post('/ml/similarity-check', request);
-    return response.data;
+    return await api.post('/ml/similarity-check', request);
   },
 
   // Get ML models status
@@ -88,13 +85,11 @@ export const mlService = {
     scaler_available: boolean;
     features_available: boolean;
   }> {
-    const response = await api.get('/ml/models/status');
-    return response.data;
+    return await api.get('/ml/models/status');
   },
 
   // Reload ML models (admin only)
   async reloadModels(): Promise<{ message: string; models_loaded: boolean }> {
-    const response = await api.post('/ml/models/reload');
-    return response.data;
+    return await api.post('/ml/models/reload');
   }
 };

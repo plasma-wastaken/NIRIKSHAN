@@ -47,7 +47,7 @@ export interface InspectionMLResult {
 
 export const MOCK_ML_RESULTS: Record<string, InspectionMLResult> = {
   // HIGH-risk inspection — has flags and repeated evidence
-  'INS-2023-1030': {
+  'INS-2026-0830': {
     cv_validation: {
       evidence_id: 'EV-1042',
       flags: ['blocked_exit', 'missing_signage'],
@@ -66,7 +66,7 @@ export const MOCK_ML_RESULTS: Record<string, InspectionMLResult> = {
       flagged: true,
     },
     anomaly_scoring: {
-      inspection_id: 'INS-2023-1030',
+      inspection_id: 'INS-2026-0830',
       score: 72,
       risk_level: 'HIGH',
       factors: {
@@ -76,12 +76,12 @@ export const MOCK_ML_RESULTS: Record<string, InspectionMLResult> = {
         metadata_inconsistency: 0.3,
       },
       confidence: 0.89,
-      computed_at: '2023-10-26T16:47:00Z',
+      computed_at: '2026-08-26T16:47:00Z',
     },
   },
 
   // LOW-risk inspection — clean bill of health
-  'INS-2023-1025': {
+  'INS-2026-0825': {
     cv_validation: {
       evidence_id: 'EV-1033',
       flags: [],
@@ -97,7 +97,7 @@ export const MOCK_ML_RESULTS: Record<string, InspectionMLResult> = {
       flagged: false,
     },
     anomaly_scoring: {
-      inspection_id: 'INS-2023-1025',
+      inspection_id: 'INS-2026-0825',
       score: 14,
       risk_level: 'LOW',
       factors: {
@@ -107,7 +107,7 @@ export const MOCK_ML_RESULTS: Record<string, InspectionMLResult> = {
         metadata_inconsistency: 0.0,
       },
       confidence: 0.94,
-      computed_at: '2023-10-26T10:32:00Z',
+      computed_at: '2026-08-26T10:32:00Z',
     },
   },
 
