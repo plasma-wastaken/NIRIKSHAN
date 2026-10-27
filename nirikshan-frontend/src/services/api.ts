@@ -14,7 +14,9 @@ import { MOCK_COMPLAINTS } from '../data/mockComplaints';
 // ENVIRONMENT CONFIGURATION
 // ============================================================================
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// On Vercel the backend is reachable at /api (via the public rewrite in vercel.json).
+// For local development outside `vercel dev`, set VITE_API_BASE_URL=http://localhost:8000
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API === 'true';
 
 // ============================================================================

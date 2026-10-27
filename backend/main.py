@@ -59,11 +59,22 @@ app = FastAPI(
 )
 
 # Configure CORS
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+# CORS_ORIGINS: comma-separated list of allowed origins.
+# On Vercel, also add your production domain here or set CORS_ORIGINS in the Vercel dashboard.
+cors_origins_env = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+
+def is_allowed_origin(origin: str) -> bool:
+    """Allow explicitly configured origins plus all *.vercel.app / *.vercel.sh previews."""
+    if origin in cors_origins_env:
+        return True
+    if origin.endswith(".vercel.app") or origin.endswith(".vercel.sh"):
+        return True
+    return False
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
+    allow_origins=cors_origins_env,
+    allow_origin_regex=r"https://.*\.vercel\.(app|sh)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

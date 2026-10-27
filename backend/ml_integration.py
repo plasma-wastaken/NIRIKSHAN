@@ -17,8 +17,9 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 from pathlib import Path
 
-# ML Model paths
-ML_MODELS_PATH = Path(__file__).parent.parent / "nirikshan ml"
+# ML Model paths — defaults to backend/ml_models/ so the files are included in the
+# Vercel service bundle. Override with the ML_MODELS_PATH environment variable if needed.
+ML_MODELS_PATH = Path(os.environ.get("ML_MODELS_PATH", "")) or Path(__file__).parent / "ml_models"
 
 class MLIntegration:
     """Main ML integration class that loads and uses trained models."""
